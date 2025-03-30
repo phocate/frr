@@ -1,0 +1,55 @@
+
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: regulation-tracker-flask
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src:/app/src
+      - ./conf:/app/conf
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./errors:/app/errors
+    depends_on:
+      - mysql
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=src/app.py
+      - FLASK_DEBUG=1
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=frr
+      - MYSQL_PASSWORD=frr_pass
+      - MYSQL_DATABASE=frr
+      - DATABASE_URL=mysql+mysqlconnector://frr:frr_pass@mysql:3306/frr
+    networks:
+      - regulation-network
+
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: regulation-tracker-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=frr
+      - MYSQL_USER=frr_user
+      - MYSQL_PASSWORD=frr_pass
+    networks:
+      - regulation-network
+
+networks:
+  regulation-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regulation Tracker</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2874a6;
+            --light: #f5f5f5;
+            --dark: #333;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+            --neutral: #7f8c8d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f8fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .search-filters {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .filter-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 0.9rem;
+        }
+        
+        .regulations-list {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .regulation-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .regulation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .regulation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .regulation-title {
+            flex: 1;
+        }
+        
+        .regulation-title h2 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .regulation-meta {
+            font-size: 0.85rem;
+            color: var(--neutral);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .regulation-agency {
+            font-weight: 500;
+        }
+        
+        .regulation-committee {
+            font-style: italic;
+        }
+
+        .regulation-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+            background-color: var(--neutral);
+        }
+        
+        .timeline {
+            display: flex;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+        
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid #ddd;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .step-active .step-marker {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .step-complete .step-marker {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .step-pending .step-marker {
+            background-color: white;
+            border-color: #ddd;
+            color: var(--neutral);
+        }
+        
+        .step-title {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .step-date {
+            font-size: 0.75rem;
+            color: var(--neutral);
+        }
+        
+        .step-pending .step-title,
+        .step-pending .step-date {
+            color: #aaa;
+        }
+        
+        .related-documents {
+            margin-top: 15px;
+        }
+        
+        .related-documents h3 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .documents-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .document-link {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            border: 1px solid #eee;
+        }
+        
+        .document-link:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .document-link i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+        
+        .pagination button {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pagination button:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .search-row, 
+            .filter-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-item {
+                min-width: 100%;
+            }
+            
+            .regulation-header {
+                flex-direction: column;
+            }
+            
+            .timeline {
+                flex-direction: column;
+                margin-left: 20px;
+            }
+            
+            .timeline::before {
+                top: 0;
+                bottom: 0;
+                left: 15px;
+                right: auto;
+                width: 2px;
+                height: 100%;
+            }
+            
+            .timeline-step {
+                text-align: left;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .step-marker {
+                margin: 0 15px 0 0;
+            }
+            
+            .step-info {
+                flex: 1;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Regulation Tracker</h1>
+            <p>Track rulemaking processes across federal agencies and their committees of jurisdiction</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <section class="search-filters">
+            <div class="search-row">
+                <div class="search-box">
+                    <input type="text" placeholder="Search regulations, keywords, or RIN...">
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label for="agency">Agency</label>
+                    <select id="agency">
+                        <option value="">All Agencies</option>
+                        <option value="epa">Environmental Protection Agency</option>
+                        <option value="fcc">Federal Communications Commission</option>
+                        <option value="dot">Department of Transportation</option>
+                        <option value="hhs">Department of Health and Human Services</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="committee">Committee of Jurisdiction</label>
+                    <select id="committee">
+                        <option value="">All Committees</option>
+                        <option value="commerce">Commerce</option>
+                        <option value="agriculture">Agriculture</option>
+                        <option value="transportation">Transportation & Infrastructure</option>
+                        <option value="energy">Energy & Commerce</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="status">Rulemaking Stage</label>
+                    <select id="status">
+                        <option value="">All Stages</option>
+                        <option value="anprm">Advanced Notice of Proposed Rulemaking</option>
+                        <option value="nprm">Notice of Proposed Rulemaking</option>
+                        <option value="final">Final Rule</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="date">Date Range</label>
+                    <select id="date">
+                        <option value="">All Time</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                        <option value="365">Last year</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+        
+        <section class="regulations-list">
+            <div class="regulation-item">
+                <div class="regulation-header">
+                    <div class="regulation-title">
+                        <h2>Clean Air Act Standards for Light-Duty Vehicles</h2>
+                        <div class="regulation-meta">
+                            <span class="regulation-agency">EPA</span>
+                            <span class="regulation-committee">Energy & Commerce</span>
+                            <span class="regulation-id">RIN: 2060-AV13</span>
+                        </div>
+                    </div>
+                    <div class="regulation-badge" style="background-color: var(--warning);">NPRM</div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-step step-complete">
+                        <div class="step-marker">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">ANPRM</div>
+                            <div class="step-date">May 12, 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step step-active">
+                        <div class="step-marker">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">NPRM</div>
+                            <div class="step-date">October 5, 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step step-pending">
+                        <div class="step-marker">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">Final Rule</div>
+                            <div class="step-date">Pending</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="related-documents">
+                    <h3>Related Documents</h3>
+                    <div class="documents-list">
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-pdf"></i>
+                            ANPRM Document
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-alt"></i>
+                            Proposed Rule Text
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-comments"></i>
+                            Public Comments (352)
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-contract"></i>
+                            Regulatory Impact Analysis
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="regulation-item">
+                <div class="regulation-header">
+                    <div class="regulation-title">
+                        <h2>Broadband Consumer Privacy Protection Rules</h2>
+                        <div class="regulation-meta">
+                            <span class="regulation-agency">FCC</span>
+                            <span class="regulation-committee">Commerce</span>
+                            <span class="regulation-id">RIN: 3060-BL12</span>
+                        </div>
+                    </div>
+                    <div class="regulation-badge" style="background-color: var(--success);">Final Rule</div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-step step-complete">
+                        <div class="step-marker">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">NPRM</div>
+                            <div class="step-date">January 15, 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step step-complete">
+                        <div class="step-marker">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">Final Rule</div>
+                            <div class="step-date">September 20, 2024</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="related-documents">
+                    <h3>Related Documents</h3>
+                    <div class="documents-list">
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-pdf"></i>
+                            NPRM Document
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-gavel"></i>
+                            Final Rule Text
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-comments"></i>
+                            Public Comments (1,205)
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-contract"></i>
+                            Regulatory Impact Analysis
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="regulation-item">
+                <div class="regulation-header">
+                    <div class="regulation-title">
+                        <h2>Agricultural Worker Protection Standards</h2>
+                        <div class="regulation-meta">
+                            <span class="regulation-agency">USDA</span>
+                            <span class="regulation-committee">Agriculture</span>
+                            <span class="regulation-id">RIN: 0583-AD89</span>
+                        </div>
+                    </div>
+                    <div class="regulation-badge" style="background-color: var(--secondary);">ANPRM</div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-step step-active">
+                        <div class="step-marker">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">ANPRM</div>
+                            <div class="step-date">August 30, 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step step-pending">
+                        <div class="step-marker">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">NPRM</div>
+                            <div class="step-date">Pending</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-step step-pending">
+                        <div class="step-marker">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="step-info">
+                            <div class="step-title">Final Rule</div>
+                            <div class="step-date">Pending</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="related-documents">
+                    <h3>Related Documents</h3>
+                    <div class="documents-list">
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-pdf"></i>
+                            ANPRM Document
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-comments"></i>
+                            Public Comments (83)
+                        </a>
+                        <a href="#" class="document-link">
+                            <i class="fas fa-file-alt"></i>
+                            Request for Information
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="pagination">
+            <button>Previous</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>Next</button>
+        </div>
+    </div>
+    
+    <script>
+        // This would contain JavaScript for handling:
+        // 1. API calls to federalregister.gov and regulations.gov
+        // 2. Filter and search functionality
+        // 3. Pagination
+        // 4. Timeline visualization
+        // 5. Dynamic document loading
+        
+        // Example placeholder for demo purposes
+        document.addEventListener('DOMContentLoaded', function() {
+            const filters = document.querySelectorAll('select');
+            const searchInput = document.querySelector('input[type="text"]');
+            
+            // Demo filter functionality
+            filters.forEach(filter => {
+                filter.addEventListener('change', function() {
+                    console.log(`Filter ${this.id} changed to ${this.value}`);
+                    // Would trigger API call and results refresh
+                });
+            });
+            
+            // Demo search functionality
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    console.log(`Search for: ${this.value}`);
+                    // Would trigger API call and results refresh
+                }
+            });
+        });
+    </script>
+</body>
+</html>
