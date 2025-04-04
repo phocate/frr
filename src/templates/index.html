@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Search Regulations</h2>
+    
+    {% if error_message %}
+    <div class="alert alert-danger">
+        {{ error_message }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('index') }}">
+        {{ form.csrf_token }}
+        
+        <div class="form-group">
+            {{ form.q.label }}
+            {{ form.q(class="form-control", placeholder="Enter keywords, regulation title, or document number") }}
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.agency.label }}
+                {{ form.agency(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                {{ form.committee.label }}
+                {{ form.committee(class="form-control") }}
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.status.label }}
+                {{ form.status(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                {{ form.date.label }}
+                {{ form.date(class="form-control") }}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            {{ form.submit(class="btn") }}
+        </div>
+    </form>
+    
+    {% if results %}
+        <div class="results-count">
+            Found {{ total_count }} regulations
+        </div>
+        
+        {% for regulation in results %}
+            <div class="regulation-item">
+                <div class="regulation-header">
+                    <div class="regulation-title">{{ regulation.title }}</div>
+                    
+                    <div>
+                        {% if 'ANPRM' in regulation.stage %}
+                            <span class="badge badge-anprm">ANPRM</span>
+                        {% elif 'NPRM' in regulation.stage %}
+                            <span class="badge badge-nprm">NPRM</span>
+                        {% elif 'Final Rule' in regulation.stage %}
+                            <span class="badge badge-final">Final Rule</span>
+                        {% else %}
+                            <span class="badge badge-other">{{ regulation.stage }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="regulation-meta">
+                    <div><strong>Agency:</strong> {{ regulation.agency }}</div>
+                    <div><strong>Committee:</strong> {{ regulation.committee }}</div>
+                    <div><strong>Publication Date:</strong> {{ regulation.publication_date }}</div>
+                    <div><strong>Document ID:</strong> {{ regulation.id }}</div>
+                </div>
+                
+                {% if regulation.abstract %}
+                    <div class="regulation-abstract">
+                        {{ regulation.abstract[:200] }}{% if regulation.abstract|length > 200 %}...{% endif %}
+                    </div>
+                {% endif %}
+                
+                <div class="regulation-links">
+                    <a href="{{ regulation.html_url }}" target="_blank">View HTML</a>
+                    <a href="{{ regulation.pdf_url }}" target="_blank">View PDF</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% elif form.is_submitted() %}
+        <div class="alert alert-info">
+            No regulations found matching your search criteria.
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,171 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f8fa;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+header {
+    background-color: #1a5276;
+    color: white;
+    padding: 1rem;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #1a5276;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #154360;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.results-count {
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.regulation-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.regulation-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.regulation-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a5276;
+    margin-bottom: 5px;
+}
+
+.regulation-meta {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.regulation-abstract {
+    margin-bottom: 10px;
+}
+
+.regulation-links a {
+    display: inline-block;
+    margin-right: 10px;
+    color: #1a5276;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.badge-anprm {
+    background-color: #2874a6;
+}
+
+.badge-nprm {
+    background-color: #f39c12;
+}
+
+.badge-final {
+    background-color: #27ae60;
+}
+
+.badge-other {
+    background-color: #7f8c8d;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+	display: flex;
+	margin-right: -10px;
+	margin-left: -10px;
+    }
+    
+    .form-group {
+	flex: 1;
+	padding: 0 10px;
+    }
+}
